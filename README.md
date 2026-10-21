@@ -10,7 +10,7 @@ Most portfolios show tutorials. This one shows evidence: every version ends with
 | Version | Focus | Status |
 |---|---|---|
 | v1 | Foundation: cost control, resource organisation, activity logging, first KQL | ✅ Done |
-| v2 | Identity and data: RBAC, managed identity, Key Vault, secure storage | Next |
+| v2 | Identity and data: RBAC, managed identity, Key Vault, secure storage | ✅ Done |
 | v3 | Telemetry: endpoint, identity and Linux logs into Microsoft Sentinel | Planned |
 | v4 | Detection and investigation: analytics rules, attacks, incident reports | Planned |
 | v5–v12 | Hunting, automation, cloud hardening, AI agent security, AI red teaming, governance | Planned |
@@ -38,7 +38,23 @@ flowchart LR
   C -->|Diagnostic setting| D[Log Analytics workspace: AzureActivity table]
   D --> E[KQL investigation]
 ```
+## v2 - Identity and data (21 Oct 2026)
 
+What was built
+- Entra ID users and security groups for three fictional Contoso roles (cloud engineer, SOC analyst, external auditor), with Azure roles assigned to groups at resource-group scope. See docs/rbac-matrix.md.
+- Storage account with anonymous access and shared-key access disabled; data access only through Entra ID roles (auditors: Storage Blob Data Reader).
+- Key Vault (RBAC). An Automation runbook reads one secret using its managed identity, with read access to that single secret only. No credentials in code (scripts/read-kv-secret.ps1).
+- Key Vault audit logs and the Activity Log sent to Microsoft Sentinel; queries 002 and 003 in sentinel/kql.
+- First incident exercise: excessive role granted to the auditors group, detected and contained in 18 minutes. See docs/incidents.
+
+What I learned
+- Owner and Reader are control-plane roles. Reading data in storage or Key Vault needs separate data-plane roles, even for the subscription owner.
+- Key Vault returns Forbidden, not Not Found, for secrets an identity has no access to, so names cannot be guessed.
+- Empty query results are often about timing or scope (workspace vs resource group), not missing activity.
+
+Known gaps (accepted for now)
+- Storage and Key Vault still allow public network access; private endpoints are planned for v7.
+- Privileged roles are permanent assignments; PIM with approval is planned for v7.
 ## Data and safety
 - All data is from my own lab with a fictional company (Contoso). No employer data is used.
 - No keys, IDs or personal data are committed. Secret scanning and push protection are enabled.
