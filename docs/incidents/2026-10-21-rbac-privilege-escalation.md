@@ -12,7 +12,7 @@ The Contributor role was granted to grp-flagship-auditors on rg-flagship-lab-uae
 | 09:00 | Detected with query 002 (role assignment changes) |
 | 09:01 | Analysed: requestbody on the Start event showed RoleDefinitionId = Contributor, PrincipalType = Group; PrincipalId matched grp-flagship-auditors in Entra ID |
 | 09:05 | Contained: role assignment removed (role assignment DELETE) |
-| 09:20 | Recovery verified: DELETE event in logs; Check access shows Sam Patel with Reader only on the RG |
+| 09:17 | Recovery verified: DELETE event in logs; Check access shows Sam Patel with Reader only on the RG |
 
 ## Analysis
 - Who: subscription owner account (Caller, redacted)
