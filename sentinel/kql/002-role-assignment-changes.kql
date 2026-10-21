@@ -1,0 +1,12 @@
+// 002 - Role assignments created in the subscription
+// Purpose: see who granted access, to what, and when (privilege changes)
+// Data source: AzureActivity (subscription Activity Log via diagnostic setting)
+// MITRE ATT&CK: T1098 Account Manipulation (when unexpected)
+// Note: run from the Log Analytics workspace (workspace context), not from a resource group
+// Note: filter on Success to avoid the Start row for each action
+// False positives: planned access changes by admins; check against change tickets
+AzureActivity
+| where TimeGenerated > ago(1d)
+| where OperationNameValue has "RoleAssignments"
+| where ActivityStatusValue == "Success"
+| project TimeGenerated, Caller, OperationNameValue, ResourceGroup
