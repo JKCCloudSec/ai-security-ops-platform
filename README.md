@@ -55,6 +55,18 @@ What I learned
 Known gaps (accepted for now)
 - Storage and Key Vault still allow public network access; private endpoints are planned for v7.
 - Privileged roles are permanent assignments; PIM with approval is planned for v7.
+
+
+## v3.0 - Telemetry (Oct 2026)
+
+Logs from cloud, identity, Linux and Windows now arrive in one Microsoft Sentinel workspace, which is connected to the Microsoft Defender portal.
+
+- Entra ID audit logs, Linux Syslog from an Arc-connected Ubuntu server, and Defender for Endpoint data from the domain controller, alongside the Azure Activity and Key Vault logs from v1 and v2
+- A virtual network with an app subnet and a data subnet; an NSG allows only SQL from the app tier into the data tier
+- Temporary Owner access for the lab admin account during setup: granted and removed within 21 minutes, both changes confirmed in AzureActivity
+- New queries 004 to 006, with MITRE mapping and tuning notes
+
+Details and diagrams: [docs/v3/v3-telemetry.md](docs/v3/v3-telemetry.md)
 ## Data and safety
 - All data is from my own lab with a fictional company (Contoso). No employer data is used.
 - No keys, IDs or personal data are committed. Secret scanning and push protection are enabled.
