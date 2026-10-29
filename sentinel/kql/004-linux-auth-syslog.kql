@@ -1,0 +1,10 @@
+// 004 - Linux authentication events from Syslog
+// Purpose : See SSH logins, sudo use and failed passwords on Linux servers.
+// Source  : Syslog (Azure Monitor Agent + data collection rule, Arc-connected Ubuntu)
+// MITRE   : T1110 Brute Force, T1078 Valid Accounts, T1548.003 Sudo
+// Tuning  : Admin sudo use is normal; look for failures in bursts or logins at odd hours.
+Syslog
+| where TimeGenerated > ago(1d)
+| where Facility in ("auth", "authpriv")
+| summarize Events = count(), LastEvent = max(TimeGenerated) by Computer, Facility, ProcessName
+| sort by Events desc

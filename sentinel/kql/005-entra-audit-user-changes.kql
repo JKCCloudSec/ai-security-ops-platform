@@ -1,0 +1,12 @@
+// 005 - Changes to users in Microsoft Entra ID
+// Purpose : Who changed which user, and what was changed.
+// Source  : AuditLogs (Entra ID diagnostic setting diag-entra-to-sentinel)
+// MITRE   : T1098 Account Manipulation
+// Tuning  : HR and IT updates are normal; watch for changes made by unexpected accounts.
+AuditLogs
+| where TimeGenerated > ago(1d)
+| where OperationName has "Update user"
+| extend Actor = tostring(InitiatedBy.user.userPrincipalName),
+         Target = tostring(TargetResources[0].userPrincipalName)
+| project TimeGenerated, OperationName, Actor, Target, Result
+| sort by TimeGenerated desc

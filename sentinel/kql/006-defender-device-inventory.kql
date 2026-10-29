@@ -1,0 +1,10 @@
+// 006 - Devices reporting to Defender for Endpoint
+// Purpose : Confirm which endpoints send telemetry, and when each was last seen.
+// Source  : DeviceInfo (Defender XDR advanced hunting, Defender portal)
+// MITRE   : Coverage check (supports detection of any endpoint technique)
+// Tuning  : A device not seen for days has a sensor or power problem - a visibility gap.
+// Note    : Defender tables use Timestamp; Sentinel tables use TimeGenerated.
+DeviceInfo
+| where Timestamp > ago(7d)
+| summarize LastSeen = max(Timestamp) by DeviceName, OSPlatform
+| sort by LastSeen desc
