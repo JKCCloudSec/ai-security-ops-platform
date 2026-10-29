@@ -11,7 +11,7 @@ Most portfolios show tutorials. This one shows evidence: every version ends with
 |---|---|---|
 | v1 | Foundation: cost control, resource organisation, activity logging, first KQL | ✅ Done |
 | v2 | Identity and data: RBAC, managed identity, Key Vault, secure storage | ✅ Done |
-| v3 | Telemetry: endpoint, identity and Linux logs into Microsoft Sentinel | Planned |
+| v3 | Telemetry: endpoint, identity and Linux logs into Microsoft Sentinel | ✅ Done |
 | v4 | Detection and investigation: analytics rules, attacks, incident reports | Planned |
 | v5–v12 | Hunting, automation, cloud hardening, AI agent security, AI red teaming, governance | Planned |
 
