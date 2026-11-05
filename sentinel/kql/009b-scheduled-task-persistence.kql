@@ -1,0 +1,16 @@
+// Detection: Scheduled task persistence created
+// MITRE: T1053.005 Scheduled Task
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint)
+// Engine: Microsoft Defender custom detection rule
+// Logic: catch task creation via schtasks.exe /create OR the PowerShell cmdlets Register-ScheduledTask / New-ScheduledTask.
+// Tuning: schtasks /create is common for admins and installers, so it is medium confidence alone.
+//         Raise fidelity by requiring a suspicious task action (/tr pointing at powershell, -enc, cmd /c, \temp\, or http).
+// Investigate: read the task action (/tr) and the parent process (InitiatingProcessFileName).
+// Test: schtasks /create /tn LabPersistTest /tr calc.exe /sc onlogon /f ; expect the /create row, parent = powershell.exe.
+
+DeviceProcessEvents
+| where (FileName =~ "schtasks.exe" and ProcessCommandLine has "/create")
+     or (FileName in~ ("powershell.exe", "pwsh.exe") and ProcessCommandLine has_any ("Register-ScheduledTask", "New-ScheduledTask"))
+| project Timestamp, ReportId, DeviceId, DeviceName, AccountName, AccountSid,
+          FileName, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine
+| order by Timestamp desc

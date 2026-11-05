@@ -1,0 +1,17 @@
+// Detection: SSH brute force (Linux)
+// MITRE: T1110 Brute Force
+// Data source: Syslog (auth/authpriv), via AMA on the Ubuntu host
+// Engine: Microsoft Sentinel scheduled analytics rule
+// Logic: one source IP with many failed SSH passwords against a single user.
+// Tuning: threshold >= 5 failures per source+user keeps out the odd mistyped login.
+// Test: hydra SSH password list against the lab Ubuntu host; expect one row per source+user.
+
+Syslog
+| where Facility in ("auth", "authpriv")
+| where SyslogMessage has "Failed password"
+| extend SourceIP   = extract(@"from (\d+\.\d+\.\d+\.\d+)", 1, SyslogMessage)
+| extend TargetUser = extract(@"for (\w+) from", 1, SyslogMessage)
+| summarize FailureCount = count(), FirstSeen = min(TimeGenerated), LastSeen = max(TimeGenerated)
+    by SourceIP, TargetUser, Computer
+| where FailureCount >= 5
+| sort by FailureCount desc

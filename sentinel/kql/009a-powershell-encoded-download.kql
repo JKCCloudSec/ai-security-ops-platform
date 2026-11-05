@@ -1,0 +1,20 @@
+// Detection: Suspicious PowerShell - encoded / download cradle
+// MITRE: T1059.001 PowerShell
+// Data source: DeviceProcessEvents (Microsoft Defender for Endpoint)
+// Engine: Microsoft Defender custom detection rule (NOT a Sentinel analytics rule - endpoint data lives in Defender XDR)
+// Logic: detect on the command line, not the file name. powershell.exe runs constantly for valid reasons;
+//        the intent is in the arguments (encoded command, download cradle).
+// Tuning: -nop / hidden on their own are weak (legit scripts use them) so they are NOT the trigger; only context.
+//         Check InitiatingProcessFileName - PowerShell spawned by Office/wscript/cmd is far more suspicious.
+// Note: Defender AMSI/behavioural already blocks the raw cradle (ClickFix) natively; this rule covers audit-only / non-blocked variants.
+// Test: run an encoded PowerShell command on the DC; expect the -enc row only (not Write-Host or Arc heartbeats).
+
+DeviceProcessEvents
+| where FileName in~ ("powershell.exe", "pwsh.exe", "powershell_ise.exe")
+| where ProcessCommandLine has_any (
+    "-enc", "-EncodedCommand", "FromBase64String",
+    "DownloadString", "DownloadFile", "Net.WebClient",
+    "Invoke-WebRequest", "IEX", "Invoke-Expression")
+| project Timestamp, ReportId, DeviceId, DeviceName, AccountName, AccountSid,
+          FileName, ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine
+| order by Timestamp desc
